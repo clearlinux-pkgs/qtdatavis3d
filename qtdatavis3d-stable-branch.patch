@@ -8,10 +8,15 @@ Jani Heikkinen (2):
       Bump version
       Bump version
 
-Tarja Sundqvist (3):
+Sami Varanka (1):
+      Fix QML theme showing totally dark
+
+Tarja Sundqvist (5):
       Update commercial license headers
       Revert "Update commercial license headers"
+      Bump version
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.4' into tqtc/lts-5.15-opensource
+      Merge remote-tracking branch 'origin/tqtc/lts-5.15.5' into tqtc/lts-5.15-opensource
 
 diff --git a/src/datavisualization/data/qsurfacedataproxy.cpp b/src/datavisualization/data/qsurfacedataproxy.cpp
 index 1c61084c..d176238a 100644
@@ -57,6 +62,20 @@ index 1c61084c..d176238a 100644
          m_dataArray->insert(rowIndex++, rows.at(i));
      }
  }
+diff --git a/src/datavisualization/theme/thememanager.cpp b/src/datavisualization/theme/thememanager.cpp
+index 01c7c10b..fb06b11c 100644
+--- a/src/datavisualization/theme/thememanager.cpp
++++ b/src/datavisualization/theme/thememanager.cpp
+@@ -101,7 +101,8 @@ void ThemeManager::setActiveTheme(Q3DTheme *theme)
+     m_activeTheme = theme;
+ 
+     // Reset all bits to dirty for sync
+-    m_activeTheme->d_ptr->resetDirtyBits();
++    if (theme->d_ptr->isForcePredefinedType())
++        m_activeTheme->d_ptr->resetDirtyBits();
+ 
+     // Connect signals from new one
+     connectThemeSignals();
 diff --git a/tests/auto/cpptest/q3dsurface-proxy/tst_proxy.cpp b/tests/auto/cpptest/q3dsurface-proxy/tst_proxy.cpp
 index cda6bcce..1516e67d 100644
 --- a/tests/auto/cpptest/q3dsurface-proxy/tst_proxy.cpp
