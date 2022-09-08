@@ -8,15 +8,19 @@ Jani Heikkinen (2):
       Bump version
       Bump version
 
-Sami Varanka (1):
+Sami Varanka (3):
       Fix QML theme showing totally dark
+      Fix Q3DScatter memory leak
+      Fix bargraph labels face wrong direction
 
-Tarja Sundqvist (5):
+Tarja Sundqvist (7):
       Update commercial license headers
       Revert "Update commercial license headers"
       Bump version
+      Bump version
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.4' into tqtc/lts-5.15-opensource
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.5' into tqtc/lts-5.15-opensource
+      Merge remote-tracking branch 'origin/tqtc/lts-5.15.6' into tqtc/lts-5.15-opensource
 
 diff --git a/src/datavisualization/data/qsurfacedataproxy.cpp b/src/datavisualization/data/qsurfacedataproxy.cpp
 index 1c61084c..d176238a 100644
@@ -62,6 +66,44 @@ index 1c61084c..d176238a 100644
          m_dataArray->insert(rowIndex++, rows.at(i));
      }
  }
+diff --git a/src/datavisualization/engine/bars3drenderer.cpp b/src/datavisualization/engine/bars3drenderer.cpp
+index c57339db..c04ef78c 100644
+--- a/src/datavisualization/engine/bars3drenderer.cpp
++++ b/src/datavisualization/engine/bars3drenderer.cpp
+@@ -2051,10 +2051,14 @@ void Bars3DRenderer::drawLabels(bool drawSelection, const Q3DCamera *activeCamer
+ 
+     glEnable(GL_POLYGON_OFFSET_FILL);
+ 
++    // If camera x rotation is 180, side labels face wrong direction
++    float activeCameraXRotation = (activeCamera->xRotation() >= 180.0f) ? -180.0f
++                                                                        : activeCamera->xRotation();
++
+     float labelAutoAngle = m_axisCacheY.labelAutoRotation();
+     float labelAngleFraction = labelAutoAngle / 90.0f;
+     float fractionCamY = activeCamera->yRotation() * labelAngleFraction;
+-    float fractionCamX = activeCamera->xRotation() * labelAngleFraction;
++    float fractionCamX = activeCameraXRotation * labelAngleFraction;
+     float labelsMaxWidth = 0.0f;
+ 
+     int startIndex;
+@@ -2168,7 +2172,7 @@ void Bars3DRenderer::drawLabels(bool drawSelection, const Q3DCamera *activeCamer
+     labelAutoAngle = m_axisCacheZ.labelAutoRotation();
+     labelAngleFraction = labelAutoAngle / 90.0f;
+     fractionCamY = activeCamera->yRotation() * labelAngleFraction;
+-    fractionCamX = activeCamera->xRotation() * labelAngleFraction;
++    fractionCamX = activeCameraXRotation * labelAngleFraction;
+     GLfloat labelYAdjustment = 0.005f;
+     GLfloat colPosValue = m_scaleXWithBackground + labelMargin;
+     GLfloat rowPosValue = m_scaleZWithBackground + labelMargin;
+@@ -2293,7 +2297,7 @@ void Bars3DRenderer::drawLabels(bool drawSelection, const Q3DCamera *activeCamer
+     labelAutoAngle = m_axisCacheX.labelAutoRotation();
+     labelAngleFraction = labelAutoAngle / 90.0f;
+     fractionCamY = activeCamera->yRotation() * labelAngleFraction;
+-    fractionCamX = activeCamera->xRotation() * labelAngleFraction;
++    fractionCamX = activeCameraXRotation * labelAngleFraction;
+     alignment = (m_xFlipped != m_zFlipped) ? Qt::AlignLeft : Qt::AlignRight;
+     if (labelAutoAngle == 0.0f) {
+         labelRotation = QVector3D(-90.0f, 90.0f, 0.0f);
 diff --git a/src/datavisualization/theme/thememanager.cpp b/src/datavisualization/theme/thememanager.cpp
 index 01c7c10b..fb06b11c 100644
 --- a/src/datavisualization/theme/thememanager.cpp
@@ -76,6 +118,38 @@ index 01c7c10b..fb06b11c 100644
  
      // Connect signals from new one
      connectThemeSignals();
+diff --git a/src/datavisualization/utils/scatterobjectbufferhelper.cpp b/src/datavisualization/utils/scatterobjectbufferhelper.cpp
+index 579eff98..b0858149 100644
+--- a/src/datavisualization/utils/scatterobjectbufferhelper.cpp
++++ b/src/datavisualization/utils/scatterobjectbufferhelper.cpp
+@@ -48,7 +48,6 @@ ScatterObjectBufferHelper::~ScatterObjectBufferHelper()
+ 
+ void ScatterObjectBufferHelper::fullLoad(ScatterSeriesRenderCache *cache, qreal dotScale)
+ {
+-    m_meshDataLoaded = false;
+     m_indexCount = 0;
+ 
+     ObjectHelper *dotObj = cache->object();
+@@ -71,6 +70,7 @@ void ScatterObjectBufferHelper::fullLoad(ScatterSeriesRenderCache *cache, qreal
+         m_uvbuffer = 0;
+         m_normalbuffer = 0;
+         m_elementbuffer = 0;
++        m_meshDataLoaded = false;
+     }
+ 
+     // Index vertices
+diff --git a/src/datavisualization/utils/scatterpointbufferhelper.cpp b/src/datavisualization/utils/scatterpointbufferhelper.cpp
+index 860a2b88..9a9eafec 100644
+--- a/src/datavisualization/utils/scatterpointbufferhelper.cpp
++++ b/src/datavisualization/utils/scatterpointbufferhelper.cpp
+@@ -97,6 +97,7 @@ void ScatterPointBufferHelper::load(ScatterSeriesRenderCache *cache)
+         m_bufferedPoints.clear();
+         m_pointbuffer = 0;
+         m_uvbuffer = 0;
++        m_meshDataLoaded = false;
+     }
+ 
+     bool itemsVisible = false;
 diff --git a/tests/auto/cpptest/q3dsurface-proxy/tst_proxy.cpp b/tests/auto/cpptest/q3dsurface-proxy/tst_proxy.cpp
 index cda6bcce..1516e67d 100644
 --- a/tests/auto/cpptest/q3dsurface-proxy/tst_proxy.cpp
