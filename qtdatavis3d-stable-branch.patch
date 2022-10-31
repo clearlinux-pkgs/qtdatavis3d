@@ -8,19 +8,22 @@ Jani Heikkinen (2):
       Bump version
       Bump version
 
-Sami Varanka (3):
+Sami Varanka (4):
       Fix QML theme showing totally dark
       Fix Q3DScatter memory leak
       Fix bargraph labels face wrong direction
+      Fix: QAbstract3DGraph orthoProjection docs
 
-Tarja Sundqvist (7):
+Tarja Sundqvist (9):
       Update commercial license headers
       Revert "Update commercial license headers"
+      Bump version
       Bump version
       Bump version
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.4' into tqtc/lts-5.15-opensource
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.5' into tqtc/lts-5.15-opensource
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.6' into tqtc/lts-5.15-opensource
+      Merge remote-tracking branch 'origin/tqtc/lts-5.15.7' into tqtc/lts-5.15-opensource
 
 diff --git a/src/datavisualization/data/qsurfacedataproxy.cpp b/src/datavisualization/data/qsurfacedataproxy.cpp
 index 1c61084c..d176238a 100644
@@ -104,6 +107,22 @@ index c57339db..c04ef78c 100644
      alignment = (m_xFlipped != m_zFlipped) ? Qt::AlignLeft : Qt::AlignRight;
      if (labelAutoAngle == 0.0f) {
          labelRotation = QVector3D(-90.0f, 90.0f, 0.0f);
+diff --git a/src/datavisualization/engine/qabstract3dgraph.cpp b/src/datavisualization/engine/qabstract3dgraph.cpp
+index 284ab408..20460bba 100644
+--- a/src/datavisualization/engine/qabstract3dgraph.cpp
++++ b/src/datavisualization/engine/qabstract3dgraph.cpp
+@@ -656,11 +656,6 @@ qreal QAbstract3DGraph::currentFps() const
+  *
+  * \brief Whether orthographic projection is used for displaying the graph.
+  *
+- * If \c {true}, ortographic projection is used to create 2D graphs by replacing
+- * the default input handler with one that does not allow rotating the graph and
+- * by setting the camera to view the graph
+- * directly from the side or from the top. Also, axis labels typically need to be rotated when
+- * viewing the graph from the sides.
+  * Defaults to \c{false}.
+  * \note Shadows will be disabled when set to \c{true}.
+  *
 diff --git a/src/datavisualization/theme/thememanager.cpp b/src/datavisualization/theme/thememanager.cpp
 index 01c7c10b..fb06b11c 100644
 --- a/src/datavisualization/theme/thememanager.cpp

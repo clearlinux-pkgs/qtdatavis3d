@@ -4,7 +4,7 @@
 #
 Name     : qtdatavis3d
 Version  : 5.15.2
-Release  : 22
+Release  : 23
 URL      : https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtdatavis3d-everywhere-src-5.15.2.tar.xz
 Source0  : https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtdatavis3d-everywhere-src-5.15.2.tar.xz
 Summary  : No detailed summary available
@@ -81,7 +81,7 @@ test -r config.log && cat config.log
 make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1662655443
+export SOURCE_DATE_EPOCH=1667235010
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/qtdatavis3d
 cp %{_builddir}/qtdatavis3d-everywhere-src-%{version}/LICENSE.GPL3 %{buildroot}/usr/share/package-licenses/qtdatavis3d/8624bcdae55baeef00cd11d5dfcfa60f68710a02 || :
